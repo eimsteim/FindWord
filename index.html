@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Find Word</title>
+
+    <style type="text/css">
+    body {
+      padding: 5px;
+    }
+    </style>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <!-- <link href="flatui/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link href="flatui/css/flat-ui.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="bootstrap/css/buttons.css">
+
+    <!-- rainbow for highlight code -->
+    <!-- <link href="rainbow/themes/blackboard.css" rel="stylesheet" type="text/css" media="screen">
+    <script src="rainbow/js/rainbow.js"></script>
+    <script src="rainbow/js/language/generic.js"></script>
+    <script src="rainbow/js/language/python.js"></script> -->
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <!-- <script src="bootstrap/js/jquery.min.js"></script> -->
+    <script type="text/javascript">
+        window.$ = window.jQuery = require(__dirname+'/bootstrap/js/jquery.min.js');
+    </script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+    function line2br(data){
+      return data.split("\n").join("<br />");
+    }
+
+    function check(fileName, lookingForString){
+      var data = readFile(fileName);
+      var exc = new RegExp(lookingForString);
+      if(exc.test(data)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function readFile(fileName){
+      if(fs.existsSync(fileName)) return fs.readFileSync(fileName,"utf-8");
+    }
+
+    /**
+    * 根据关键字检索文件，目前只能查找当前目录，无法查找子目录
+    */
+    function find(path, keyword){
+
+      //去掉当前已经存在的样式
+      $('#file_list > .list-group-item-danger').removeClass('list-group-item-danger');
+
+      //开始遍历查找
+      files.forEach(function(file){
+        var full_path = path + '/' + file;
+        fs.stat(full_path, function(err, stats){
+          if(stats.isFile()) { //如果是文件，则读取，并筛选
+            if(check(full_path, keyword)){
+              //匹配到file_list中的值，在file_content中显示其内容
+              $('#file_list > .list-group-item').each(function(i, n) {
+                if($(n).text() === file) {
+                  $(n).addClass('list-group-item-danger');
+                }
+              });
+
+            }
+          }
+        });
+      });
+
+    }
+    $(document).ready(function(){
+      $('#btn_find').click(function(){
+        //console.log($('#ipt_keyword').val());
+        var path = $('#target_dir').text();
+        var keyword = $('#ipt_keyword').val();
+
+        if(path != undefined && path != '') {
+          if(keyword != undefined && keyword != ''){
+            find(path, keyword);
+          } else { //如果没有填keyword，给出提示
+            alert('请填写关键字');
+            return;
+          }
+        } else { //如果没有填path，给出提示
+          alert('先选择需要扫描的目录：File->Open Folder');
+          return;
+        }
+
+
+      });
+      //click to show file content
+      $('#file_list').click(function(e){
+        var path = $('#target_dir').text() + '/' + $(e.target).text();
+        var data = fs.readFileSync(path, "utf-8");
+        //var node = line2br(data);
+
+        // var node = '<pre><code data-language="python">' + data + '</code></pre>';
+        $('#file_content').html(data);
+
+        //Rainbow._highlight($('#file_content').html());
+
+      });
+    });
+    </script>
+
+    <!-- create menu -->
+    <script type="text/javascript">
+    const remote = require('electron').remote;
+    const dialog = remote.dialog;
+    //read file
+    const fs = require('fs');
+
+    const Menu = remote.Menu;
+    //const MenuItem = remote.MenuItem;
+
+    var template = [
+      {
+        label: 'File',
+        submenu: [
+          // {
+          //   label: 'Open File',
+          //   accelerator: 'CmdOrCtrl+O',
+          //   click: function(){
+          //     //console.log(dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]}));
+          //     var file_path = dialog.showOpenDialog({ properties: [ 'openFile', 'multiSelections' ]});
+          //     console.log(file_path);
+          //     if(file_path != undefined) {
+          //       $('#target_dir').val(file_path);
+          //     }
+          //   }
+          // },
+          {
+            label: 'Open Folder',
+            accelerator: 'Shift+CmdOrCtrl+O',
+            click: function(){
+              //console.log(dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]}));
+              var dir_path = dialog.showOpenDialog({ properties: [ 'openDirectory' ]});
+              if(dir_path != undefined) {
+                $('#target_dir').text(dir_path);
+                //list files
+                if(fs != undefined) {
+                  files = fs.readdirSync(dir_path[0]);
+                  $('#file_list').empty();
+                  files.forEach(function(file){
+                    $('#file_list').append('<a href="javascript:void(0)" class="list-group-item" style="overflow: hidden;">' + file + '</a>');
+                  })
+                }
+
+              }
+            }
+          }
+        ]
+      },
+      {
+        label: 'Edit',
+        submenu: [
+          {
+            label: 'Undo',
+            accelerator: 'CmdOrCtrl+Z',
+            role: 'undo'
+          },
+          {
+            label: 'Redo',
+            accelerator: 'Shift+CmdOrCtrl+Z',
+            role: 'redo'
+          },
+          {
+            type: 'separator'
+          },
+          {
+            label: 'Cut',
+            accelerator: 'CmdOrCtrl+X',
+            role: 'cut'
+          },
+          {
+            label: 'Copy',
+            accelerator: 'CmdOrCtrl+C',
+            role: 'copy'
+          },
+          {
+            label: 'Paste',
+            accelerator: 'CmdOrCtrl+V',
+            role: 'paste'
+          },
+          {
+            label: 'Select All',
+            accelerator: 'CmdOrCtrl+A',
+            role: 'selectall'
+          },
+        ]
+      },
+      {
+        label: 'View',
+        submenu: [
+          {
+            label: 'Reload',
+            accelerator: 'CmdOrCtrl+R',
+            click: function(item, focusedWindow) {
+              if (focusedWindow)
+                focusedWindow.reload();
+            }
+          },
+          {
+            label: 'Toggle Full Screen',
+            accelerator: (function() {
+              if (process.platform == 'darwin')
+                return 'Ctrl+Command+F';
+              else
+                return 'F11';
+            })(),
+            click: function(item, focusedWindow) {
+              if (focusedWindow)
+                focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+            }
+          },
+          {
+            label: 'Toggle Developer Tools',
+            accelerator: (function() {
+              if (process.platform == 'darwin')
+                return 'Alt+Command+I';
+              else
+                return 'Ctrl+Shift+I';
+            })(),
+            click: function(item, focusedWindow) {
+              if (focusedWindow)
+                focusedWindow.toggleDevTools();
+            }
+          },
+        ]
+      },
+      {
+        label: 'Help',
+        role: 'help',
+        submenu: [
+          {
+            label: 'Learn More',
+            click: function() { require('electron').shell.openExternal('http://electron.atom.io') }
+          },
+        ]
+      },
+    ];
+
+    if (process.platform == 'darwin') {
+      var name = require('electron').app.getName();
+      template.unshift({
+        label: name,
+        submenu: [
+          {
+            label: 'About ' + name,
+            role: 'about'
+          },
+          {
+            type: 'separator'
+          },
+          {
+            label: 'Services',
+            role: 'services',
+            submenu: []
+          },
+          {
+            type: 'separator'
+          },
+          {
+            label: 'Hide ' + name,
+            accelerator: 'Command+H',
+            role: 'hide'
+          },
+          {
+            label: 'Hide Others',
+            accelerator: 'Command+Alt+H',
+            role: 'hideothers'
+          },
+          {
+            label: 'Show All',
+            role: 'unhide'
+          },
+          {
+            type: 'separator'
+          },
+          {
+            label: 'Quit',
+            accelerator: 'Command+Q',
+            click: function() { app.quit(); }
+          },
+        ]
+      });
+      // Window menu.
+      template[3].submenu.push(
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Bring All to Front',
+          role: 'front'
+        }
+      );
+    }
+
+    var menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+
+    </script>
+  </head>
+  <body>
+
+    <div class="panel panel-default">
+      <div class="panel-heading"><strong>Choose Directory</strong></div>
+      <div class="panel-body" id="target_dir" style="color: #ccc;"></div>
+    </div>
+
+    <div class="form-group">
+      <input id="ipt_keyword" type="text" class="form-control" placeholder="输入关键字" >
+    </div>
+    <a href="#" class="button button-primary button-rounded btn-block" id="btn_find">Find</a>
+
+    <p></p>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-6" style="padding-left: 0;">
+          <div class="list-group" id="file_list"></div>
+        </div>
+        <div class="col-md-9 col-sm-9 col-xs-18" style="padding-right: 0; padding-left: 0; ">
+          <div class="panel panel-default" style="width: 100%; border:0;">
+            <div class="panel-body" style="padding:0;">
+              <textarea class="form-control" rows="50" id="file_content"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
