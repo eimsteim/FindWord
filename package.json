@@ -1,5 +1,8 @@
 {
-  "name"    : "find-word",
-  "version" : "0.1.0",
-  "main"    : "main.js"
+  "name": "find-word",
+  "version": "0.1.0",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^1.7.9"
+  }
 }
