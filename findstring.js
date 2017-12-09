@@ -10,61 +10,61 @@ var lookingForString = process.argv[3];
 recursiveReadFile(filePath);
 
 
-function recursiveReadFile(fileName){
+function recursiveReadFile(fileName) {
 
-if(!fs.existsSync(fileName)) return;
+    if (!fs.existsSync(fileName)) return;
 
-if(isFile(fileName)){
+    if (isFile(fileName)) {
 
-check(fileName);
+        check(fileName);
 
-}
+    }
 
-if(isDirectory(fileName)){
+    if (isDirectory(fileName)) {
 
-var files = fs.readdirSync(fileName);
+        var files = fs.readdirSync(fileName);
 
-files.forEach(function(val,key){
+        files.forEach(function (val, key) {
 
-var temp = path.join(fileName,val);
+            var temp = path.join(fileName, val);
 
-if(isDirectory(temp)) recursiveReadFile(temp);
+            if (isDirectory(temp)) recursiveReadFile(temp);
 
-if (isFile(temp)) check(temp);
+            if (isFile(temp)) check(temp);
 
-})
+        })
 
-}
-
-}
-
-function check(fileName){
-
-var data = readFile(fileName);
-
-var exc = new RegExp(lookingForString);
-
-if(exc.test(data))
-
-console.log(fileName);
-
+    }
 
 }
 
-function isDirectory(fileName){
+function check(fileName) {
 
-if(fs.existsSync(fileName)) return fs.statSync(fileName).isDirectory();
+    var data = readFile(fileName);
+
+    var exc = new RegExp(lookingForString);
+
+    if (exc.test(data))
+
+        console.log(fileName);
+
 
 }
 
-function isFile(fileName){
+function isDirectory(fileName) {
 
-if(fs.existsSync(fileName)) return fs.statSync(fileName).isFile();
+    if (fs.existsSync(fileName)) return fs.statSync(fileName).isDirectory();
 
 }
 
-function readFile(fileName){
+function isFile(fileName) {
 
-if(fs.existsSync(fileName)) return fs.readFileSync(fileName,"utf-8");
+    if (fs.existsSync(fileName)) return fs.statSync(fileName).isFile();
+
+}
+
+function readFile(fileName) {
+
+    if (fs.existsSync(fileName)) return fs.readFileSync(fileName, "utf-8");
 
 }
