@@ -90,7 +90,7 @@
             return;
           }
         } else { //如果没有填path，给出提示
-          alert('先选择需要扫描的目录：File->Open Folder');
+          alert('先选择需要扫描的目录：文件->打开目录');
           return;
         }
 
@@ -115,6 +115,8 @@
     <script type="text/javascript">
     const remote = require('electron').remote;
     const dialog = remote.dialog;
+    const app    = remote.app;
+
     //read file
     const fs = require('fs');
 
@@ -206,51 +208,51 @@
         label: name,
         submenu: [
           {
-            label: 'About ' + name,
+            label: '关于',
             role: 'about'
           },
           {
             type: 'separator'
           },
-          {
-            label: 'Services',
-            role: 'services',
-            submenu: []
-          },
+//          {
+//            label: 'Services',
+//            role: 'services',
+//            submenu: []
+//          },
           {
             type: 'separator'
           },
           {
-            label: 'Hide ' + name,
+            label: '隐藏',
             accelerator: 'Command+H',
             role: 'hide'
           },
           {
-            label: 'Hide Others',
+            label: '隐藏其他',
             accelerator: 'Command+Alt+H',
             role: 'hideothers'
           },
-          {
-            label: 'Show All',
-            role: 'unhide'
-          },
+//          {
+//            label: 'Show All',
+//            role: 'unhide'
+//          },
           {
             type: 'separator'
           },
           {
-            label: 'Quit',
+            label: '退出',
             accelerator: 'Command+Q',
             click: function() { app.quit(); }
           },
         ]
       });
       // Window menu.
-      template[3].submenu.push(
+      template[2].submenu.push(
         {
           type: 'separator'
         },
         {
-          label: 'Bring All to Front',
+          label: '应用置顶',
           role: 'front'
         }
       );
