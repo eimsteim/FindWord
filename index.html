@@ -121,28 +121,19 @@
     const Menu = remote.Menu;
     //const MenuItem = remote.MenuItem;
 
+    var filters = "filters: [ {name: '配置文件', extensions: ['properties']} ]";
+
     var template = [
       {
-        label: 'File',
+        label: '文件',
         submenu: [
-          // {
-          //   label: 'Open File',
-          //   accelerator: 'CmdOrCtrl+O',
-          //   click: function(){
-          //     //console.log(dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]}));
-          //     var file_path = dialog.showOpenDialog({ properties: [ 'openFile', 'multiSelections' ]});
-          //     console.log(file_path);
-          //     if(file_path != undefined) {
-          //       $('#target_dir').val(file_path);
-          //     }
-          //   }
-          // },
           {
-            label: 'Open Folder',
+            label: '打开目录',
             accelerator: 'Shift+CmdOrCtrl+O',
             click: function(){
               //console.log(dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]}));
-              var dir_path = dialog.showOpenDialog({ properties: [ 'openDirectory' ]});
+              var dir_path = dialog.showOpenDialog({ properties: [ 'openDirectory' ],
+                                                     filters: [{name: 'Custom File Type', extensions: ['properties']}]});
               if(dir_path != undefined) {
                 $('#target_dir').text(dir_path);
                 //list files
@@ -153,55 +144,16 @@
                     $('#file_list').append('<a href="javascript:void(0)" class="list-group-item" style="overflow: hidden;">' + file + '</a>');
                   })
                 }
-
               }
             }
           }
         ]
       },
       {
-        label: 'Edit',
+        label: '视图',
         submenu: [
           {
-            label: 'Undo',
-            accelerator: 'CmdOrCtrl+Z',
-            role: 'undo'
-          },
-          {
-            label: 'Redo',
-            accelerator: 'Shift+CmdOrCtrl+Z',
-            role: 'redo'
-          },
-          {
-            type: 'separator'
-          },
-          {
-            label: 'Cut',
-            accelerator: 'CmdOrCtrl+X',
-            role: 'cut'
-          },
-          {
-            label: 'Copy',
-            accelerator: 'CmdOrCtrl+C',
-            role: 'copy'
-          },
-          {
-            label: 'Paste',
-            accelerator: 'CmdOrCtrl+V',
-            role: 'paste'
-          },
-          {
-            label: 'Select All',
-            accelerator: 'CmdOrCtrl+A',
-            role: 'selectall'
-          },
-        ]
-      },
-      {
-        label: 'View',
-        submenu: [
-          {
-            label: 'Reload',
+            label: '重新载入',
             accelerator: 'CmdOrCtrl+R',
             click: function(item, focusedWindow) {
               if (focusedWindow)
@@ -209,7 +161,7 @@
             }
           },
           {
-            label: 'Toggle Full Screen',
+            label: '切换全屏',
             accelerator: (function() {
               if (process.platform == 'darwin')
                 return 'Ctrl+Command+F';
@@ -222,7 +174,7 @@
             }
           },
           {
-            label: 'Toggle Developer Tools',
+            label: '切换开发者工具',
             accelerator: (function() {
               if (process.platform == 'darwin')
                 return 'Alt+Command+I';
@@ -237,11 +189,11 @@
         ]
       },
       {
-        label: 'Help',
+        label: '帮助',
         role: 'help',
         submenu: [
           {
-            label: 'Learn More',
+            label: '了解更多',
             click: function() { require('electron').shell.openExternal('http://electron.atom.io') }
           },
         ]
@@ -249,7 +201,7 @@
     ];
 
     if (process.platform == 'darwin') {
-      var name = require('electron').app.getName();
+      var name = remote.app.getName();
       template.unshift({
         label: name,
         submenu: [
