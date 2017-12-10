@@ -2,7 +2,20 @@
   "name": "FindWord",
   "version": "0.1.0",
   "main": "main.js",
+  "build": {
+    "appId": "com.onefanr.app.findword",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dmg",
+      "icon": "app_icon.icns"
+    }
+  },
+  "scripts": {
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
   "devDependencies": {
-    "electron": "^1.7.9"
+    "electron": "^1.7.9",
+    "electron-builder": "^19.48.3"
   }
 }

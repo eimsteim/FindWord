@@ -4,7 +4,8 @@ const BrowserWindow = electron.BrowserWindow;  // 创建原生浏览器窗口的
 // const Menu = electron.Menu;
 // const dialog = electron.dialog;
 
-app.dock.setIcon('./app_icon.png');
+// Can not through the electron-builder check
+//app.dock.setIcon('file://' + __dirname + '/app_icon.png');
 
 
 // 保持一个对于 window 对象的全局引用，不然，当 JavaScript 被 GC，
